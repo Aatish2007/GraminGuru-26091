@@ -1,0 +1,607 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   BASE
+========================================================= */
+
+:root {
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  color: #172033;
+  background: #f8fafc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: #f8fafc;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.07), transparent 28%),
+    radial-gradient(circle at 90% 10%, rgba(168, 85, 247, 0.07), transparent 28%),
+    #f8fafc;
+  color: #172033;
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+
+/* =========================================================
+   PAGE ENTRY ANIMATION
+========================================================= */
+
+#root {
+  animation: pageFadeIn 0.45s ease-out;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card-awesome {
+  position: relative;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.05),
+    0 8px 24px rgba(79, 70, 229, 0.04) !important;
+
+  color: #172033 !important;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+/* Purple glow line */
+
+.card-awesome::before {
+  content: "";
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: 0;
+
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #6366f1,
+    #9333ea
+  );
+
+  opacity: 0;
+
+  transition: opacity 0.25s ease;
+}
+
+.card-awesome:hover {
+  transform: translateY(-3px);
+
+  border-color: #c7d2fe !important;
+
+  box-shadow:
+    0 8px 20px rgba(79, 70, 229, 0.10),
+    0 16px 35px rgba(147, 51, 234, 0.06) !important;
+}
+
+.card-awesome:hover::before {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   INNER CARDS
+========================================================= */
+
+.card-inner {
+  background: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  color: #374151 !important;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.card-inner:hover {
+  transform: translateY(-2px);
+  border-color: #c4b5fd !important;
+
+  box-shadow:
+    0 5px 15px rgba(99, 102, 241, 0.08);
+}
+
+
+/* =========================================================
+   GLASS
+========================================================= */
+
+.glass {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid #e2e8f0 !important;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 4px 20px rgba(79, 70, 229, 0.05) !important;
+
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.glass:hover {
+  border-color: #c4b5fd !important;
+  box-shadow:
+    0 8px 25px rgba(99, 102, 241, 0.08) !important;
+}
+
+
+/* =========================================================
+   BLUE → PURPLE TEXT
+========================================================= */
+
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #6366f1,
+    #9333ea
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  color: transparent;
+}
+
+
+/* =========================================================
+   GRADIENT BUTTON
+========================================================= */
+
+.gradient-button {
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #6366f1,
+    #9333ea
+  );
+
+  color: white;
+
+  border: none;
+
+  box-shadow:
+    0 5px 15px rgba(79, 70, 229, 0.20);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.gradient-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 22px rgba(99, 102, 241, 0.30);
+
+  filter: brightness(1.03);
+}
+
+.gradient-button:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+input,
+select,
+textarea {
+  border-color: #d9dee7;
+  color: #172033;
+  background: #fff;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+
+  border-color: #6366f1;
+
+  box-shadow:
+    0 0 0 3px rgba(99, 102, 241, 0.10);
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+nav button {
+  position: relative;
+}
+
+nav button::after {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  bottom: -1px;
+
+  width: 0;
+  height: 2px;
+
+  transform: translateX(-50%);
+
+  background: linear-gradient(
+    90deg,
+    #2563eb,
+    #9333ea
+  );
+
+  transition: width 0.25s ease;
+}
+
+nav button:hover::after {
+  width: 70%;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-success {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #bbf7d0;
+}
+
+.status-warning {
+  background: #fffbeb;
+  color: #a16207;
+  border: 1px solid #fde68a;
+}
+
+.status-danger {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+
+/* =========================================================
+   LOADING ANIMATION
+========================================================= */
+
+.loading-dots::after {
+  content: "...";
+  display: inline-block;
+  width: 18px;
+  overflow: hidden;
+
+  animation: loadingDots 1.2s steps(4, end) infinite;
+}
+
+@keyframes loadingDots {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 18px;
+  }
+}
+
+
+/* =========================================================
+   FLOATING / SOFT MOTION
+========================================================= */
+
+.float-soft {
+  animation: floatSoft 4s ease-in-out infinite;
+}
+
+@keyframes floatSoft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+
+/* =========================================================
+   PULSE
+========================================================= */
+
+.pulse-soft {
+  animation: pulseSoft 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseSoft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.88;
+    transform: scale(1.02);
+  }
+}
+
+
+/* =========================================================
+   SLIDE UP
+========================================================= */
+
+.animate-slide-up {
+  animation: slideUp 0.45s ease-out both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* =========================================================
+   FADE
+========================================================= */
+
+.animate-fade {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   STAGGERED ANIMATION
+========================================================= */
+
+.stagger-item {
+  animation: slideUp 0.5s ease-out both;
+}
+
+.stagger-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.stagger-item:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.stagger-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.stagger-item:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.stagger-item:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.stagger-item:nth-child(6) {
+  animation-delay: 0.30s;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    #6366f1,
+    #9333ea
+  );
+
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+
+/* =========================================================
+   EXISTING ANIMATION COMPATIBILITY
+========================================================= */
+
+.animate-pulse {
+  animation-duration: 2.5s;
+}
+
+.no-animation {
+  animation: none !important;
+  transition: none !important;
+}
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .card-awesome,
+  .card-inner {
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+
+  .card-awesome {
+    border-radius: 12px !important;
+  }
+}
+
+
+/* =========================================================
+   REDUCE MOTION ACCESSIBILITY
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
