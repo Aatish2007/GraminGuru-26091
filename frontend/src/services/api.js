@@ -1,5 +1,6 @@
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// Production mein Vercel ka URL lega, local mein fallback URL lega
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 /* =========================
    EMI CALCULATOR
