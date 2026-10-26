@@ -1,4 +1,7 @@
 import React from 'react';
+import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import {
   MapPin,
   Building2,
@@ -346,6 +349,62 @@ export default function MarketMap({
   const hasCoordinates =
     latitude !== null &&
     longitude !== null;
+
+  // Read coordinates from mapped OSM records without changing the API shape.
+  const getItemCoordinates = (item) => {
+    const lat = toNumberOrNull(
+      item?.lat ?? item?.latitude ?? item?.coordinates?.lat ?? item?.coordinates?.latitude ?? item?.location?.lat
+    );
+    const lon = toNumberOrNull(
+      item?.lon ?? item?.lng ?? item?.longitude ?? item?.coordinates?.lon ?? item?.coordinates?.lng ?? item?.coordinates?.longitude ?? item?.location?.lon ?? item?.location?.lng
+    );
+
+    if (lat === null || lon === null || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
+      return null;
+    }
+    return { lat, lon };
+  };
+
+  const distanceBetweenKm = (lat1, lon1, lat2, lon2) => {
+    const radians = (degrees) => degrees * Math.PI / 180;
+    const dLat = radians(lat2 - lat1);
+    const dLon = radians(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 +
+      Math.cos(radians(lat1)) * Math.cos(radians(lat2)) * Math.sin(dLon / 2) ** 2;
+    return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  };
+
+  const mapPoints = [
+    ...businesses.map((item) => ({ ...item, mapType: 'business' })),
+    ...potentialRetailOutlets.map((item) => ({ ...item, mapType: 'retail' })),
+    ...marketplaces.map((item) => ({ ...item, mapType: 'market' }))
+  ].flatMap((item, index) => {
+    const coords = getItemCoordinates(item);
+    if (!coords || !hasCoordinates) return [];
+
+    const distance = distanceBetweenKm(latitude, longitude, coords.lat, coords.lon);
+    if (distance > radius) return [];
+
+    return [{
+      ...item,
+      mapKey: `${item.mapType}-${item.id ?? item.name ?? index}-${index}`,
+      mapLat: coords.lat,
+      mapLon: coords.lon,
+      mapDistance: toNumberOrNull(item.distance_km) ?? distance
+    }];
+  });
+
+  const makeMapIcon = (color) => L.divIcon({
+    className: 'graminguru-map-marker',
+    html: `<div style="width:18px;height:18px;border:3px solid white;border-radius:50%;background:${color};box-shadow:0 1px 5px #33415599;"></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
+
+  const locationIcon = makeMapIcon('#7c3aed');
+  const businessIcon = makeMapIcon('#dc2626');
+  const retailIcon = makeMapIcon('#2563eb');
+  const marketIcon = makeMapIcon('#059669');
 
   const mappingStatusMessage =
     mappingAvailable
@@ -708,33 +767,79 @@ export default function MarketMap({
 
         {hasCoordinates ? (
 
-          <div className="p-5">
+          <div className="p-3 sm:p-4">
 
-            <div className="bg-gradient-to-br from-violet-50 via-purple-50 to-slate-100 rounded-xl min-h-[220px] flex flex-col items-center justify-center text-center p-6">
+            <div className="overflow-hidden rounded-xl border border-slate-200">
+              <MapContainer
+                center={[latitude, longitude]}
+                zoom={13}
+                scrollWheelZoom={true}
+                style={{ height: '380px', width: '100%' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
 
-              <div className="w-12 h-12 rounded-full bg-violet-100 flex items-center justify-center mb-3">
+                <Circle
+                  center={[latitude, longitude]}
+                  radius={radius * 1000}
+                  pathOptions={{ color: '#7c3aed', fillColor: '#8b5cf6', fillOpacity: 0.08, weight: 2 }}
+                />
 
-                <MapPin className="w-6 h-6 text-violet-600" />
+                <Marker position={[latitude, longitude]} icon={locationIcon}>
+                  <Popup>
+                    <strong>{location || (hi ? 'चयनित स्थान' : 'Selected Location')}</strong><br />
+                    {latitude.toFixed(5)}, {longitude.toFixed(5)}
+                  </Popup>
+                </Marker>
 
-              </div>
+                {mapPoints.map((item) => {
+                  const icon = item.mapType === 'business'
+                    ? businessIcon
+                    : item.mapType === 'retail'
+                      ? retailIcon
+                      : marketIcon;
+                  const label = item.name || (hi ? 'मैप किया गया स्थान' : 'Mapped place');
+                  const typeLabel = item.mapType === 'business'
+                    ? (hi ? 'संबंधित व्यवसाय' : 'Relevant business')
+                    : item.mapType === 'retail'
+                      ? (hi ? 'रिटेल संदर्भ' : 'Retail reference')
+                      : (hi ? 'बाजार' : 'Market');
 
-              <p className="font-bold text-slate-900">
-                {location ||
-                  (hi
-                    ? 'चयनित स्थान'
-                    : 'Selected Location')}
-              </p>
-
-              <p className="text-xs text-slate-500 mt-1">
-                {latitude.toFixed(5)},{' '}
-                {longitude.toFixed(5)}
-              </p>
-
-              <p className="text-xs text-slate-500 mt-3">
-                {mappingStatusMessage}
-              </p>
-
+                  return (
+                    <Marker key={item.mapKey} position={[item.mapLat, item.mapLon]} icon={icon}>
+                      <Popup>
+                        <strong>{label}</strong><br />
+                        {typeLabel}<br />
+                        {item.mapDistance.toFixed(2)} km
+                      </Popup>
+                    </Marker>
+                  );
+                })}
+              </MapContainer>
             </div>
+
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-600 mt-3">
+              <span className="inline-flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-violet-600" />{hi ? 'चयनित स्थान' : 'Selected location'}</span>
+              <span className="inline-flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-red-600" />{hi ? 'संबंधित व्यवसाय' : 'Relevant businesses'}</span>
+              <span className="inline-flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-600" />{hi ? 'रिटेल संदर्भ' : 'Retail references'}</span>
+              <span className="inline-flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-600" />{hi ? 'बाजार' : 'Markets'}</span>
+            </div>
+
+            <p className="text-xs text-slate-500 mt-3">
+              {mappingStatusMessage} {hi
+                ? `मानचित्र पर ${mapPoints.length} स्थान ${radius} किमी के दायरे में दिखाए गए हैं।`
+                : `${mapPoints.length} mapped places are shown within ${radius} km on the map.`}
+            </p>
+
+            {mapPoints.length === 0 && (
+              <p className="text-xs text-amber-700 mt-2">
+                {hi
+                  ? 'मैप पर केवल चयनित स्थान दिख रहा है, क्योंकि आसपास के स्थानों के निर्देशांक उपलब्ध नहीं हैं या वे चुने गए दायरे से बाहर हैं।'
+                  : 'Only the selected location is shown because nearby-place coordinates are unavailable or outside the selected radius.'}
+              </p>
+            )}
 
           </div>
 
