@@ -408,7 +408,11 @@ export default function App() {
 
           {activeTab === 'market' && (
             <MarketAnalysisPage
-              marketData={marketData}
+              marketData={
+                marketData?.nearby_businesses?.success === true
+                  ? marketData
+                  : (advisoryData?.market_evidence || marketData)
+              }
               form={form}
               lang={lang}
             />
